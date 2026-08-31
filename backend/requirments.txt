@@ -1,2 +1,5 @@
 spotipy
 python-dotenv
+fastapi
+httpx
+uvicorn[standard]
