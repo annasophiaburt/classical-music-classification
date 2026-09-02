@@ -5,17 +5,17 @@ type Rule = { tag: string; terms: string[] };
 const rules: Rule[] = [
   { tag: "Baroque", terms: ["bach", "handel", "vivaldi", "purcell", "telemann", "corelli", "scarlatti", "baroque"] },
   { tag: "Classical", terms: ["mozart", "haydn", "beethoven", "gluck", "clementi", "classical"] },
-  { tag: "Romantic", terms: ["chopin", "liszt", "tchaikovsky", "rachmaninoff", "schumann", "brahms", "mendelssohn", "mahler", "wagner", "dvorak", "grieg", "saint-saens", "romantic"] },
+  { tag: "Romantic", terms: ["chopin", "liszt", "tchaikovsky", "rachmaninoff", "schumann", "brahms", "mendelssohn", "mahler", "wagner", "dvorak", "grieg", "saint-saens"] },
   { tag: "Impressionist", terms: ["debussy", "ravel", "satie", "impressionist"] },
   { tag: "Modern classical", terms: ["shostakovich", "prokofiev", "stravinsky", "philip glass", "max richter", "ludovico einaudi", "olafur arnalds", "nils frahm", "modern classical", "neo-classical", "neoclassical"] },
-  { tag: "Film score", terms: ["hans zimmer", "john williams", "ennio morricone", "howard shore", "james horner", "ramin djawadi", "thomas newman", "alexandre desplat", "cinematic", "soundtrack", "original motion picture", "film score"] },
+  { tag: "Film score", terms: ["hans zimmer", "john williams", "ennio morricone", "ludwig goransson", "alexandre desplat", "cinematic", "soundtrack", "original motion picture", "film score"] },
   { tag: "Choral", terms: ["choir", "choral", "chorus", "chorale", "voices", "singers", "requiem", "mass in", "missa", "motet", "cantata", "oratorio", "vespers"] },
   { tag: "Opera", terms: ["opera", "aria", "overture", "verdi", "puccini", "rossini", "donizetti"] },
   { tag: "Piano", terms: ["piano", "pianist", "nocturne", "etude", "étude", "waltz", "prelude"] },
   { tag: "Strings", terms: ["violin", "viola", "cello", "string quartet", "strings"] },
   { tag: "Orchestral", terms: ["orchestra", "orchestral", "philharmonic", "symphony", "symphonic", "concerto"] },
-  { tag: "Chamber", terms: ["quartet", "quintet", "trio", "chamber"] },
-  { tag: "Sacred", terms: ["sacred", "requiem", "mass", "missa", "agnus dei", "ave maria", "gloria", "kyrie", "sanctus"] },
+  { tag: "Chamber", terms: ["quartet", "quintet", "trio"] },
+  { tag: "Sacred", terms: ["sacred", "requiem", "agnus dei", "ave maria", "gloria", "kyrie", "sanctus"] },
 ];
 
 const formRules: Rule[] = [
