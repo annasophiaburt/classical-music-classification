@@ -4,12 +4,16 @@ export type Track = {
   artists: string[];
   album: string;
   uri: string;
+  added_at?: string | null;
 };
 
 export type LibraryResponse = {
   total: number;
   loaded: number;
   tracks: Track[];
+  source?: "cache" | "spotify" | "sync" | "demo";
+  synced_at?: string | null;
+  new_tracks?: number;
 };
 
 export type Classification = {

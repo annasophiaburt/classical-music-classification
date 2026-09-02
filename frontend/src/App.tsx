@@ -25,7 +25,9 @@ function App() {
     useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [filterMode, setFilterMode] = useState<"AND" | "OR">("AND");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/health")
@@ -49,6 +51,7 @@ function App() {
     setLibrary(null);
     setLoadedCount(0);
     setTotalCount(0);
+    setLibraryMessage(null);
 
     const eventSource = new EventSource(
       "http://127.0.0.1:8000/api/library/stream"
@@ -67,12 +70,19 @@ function App() {
           loaded: data.loaded,
           total: data.total,
           tracks: data.tracks,
+          source: data.source,
+          synced_at: data.synced_at,
         });
 
         setLoadedCount(data.loaded);
         setTotalCount(data.total);
 
         setLoadingLibrary(false);
+        setLibraryMessage(
+          data.source === "cache"
+            ? "Loaded from your saved cache with no Spotify requests."
+            : "Initial Spotify library downloaded and cached.",
+        );
         eventSource.close();
       }
 
@@ -102,18 +112,71 @@ function App() {
     };
   }
 
+  function syncNewSongs() {
+    setLoadingLibrary(true);
+    setError(null);
+    setLibraryMessage("Checking Spotify for newly liked songs...");
+
+    const eventSource = new EventSource(
+      "http://127.0.0.1:8000/api/library/sync/stream"
+    );
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "complete") {
+        setLibrary({
+          loaded: data.loaded,
+          total: data.total,
+          tracks: data.tracks,
+          source: data.source,
+          synced_at: data.synced_at,
+          new_tracks: data.new_tracks,
+        });
+        setLoadedCount(data.loaded);
+        setTotalCount(data.total);
+        setLoadingLibrary(false);
+        setLibraryMessage(
+          data.new_tracks === 1
+            ? "Added 1 newly liked song to the cache."
+            : `Added ${data.new_tracks} newly liked songs to the cache.`,
+        );
+        eventSource.close();
+      }
+
+      if (data.type === "error") {
+        const retryMessage = data.retry_after
+          ? ` Try again in ${data.retry_after} seconds.`
+          : "";
+        setError(`Could not sync new songs.${retryMessage}`);
+        setLoadingLibrary(false);
+        setLibraryMessage(null);
+        eventSource.close();
+      }
+    };
+
+    eventSource.onerror = () => {
+      setError("Connection to the library sync failed. Make sure the cache exists and Spotify is connected.");
+      setLoadingLibrary(false);
+      setLibraryMessage(null);
+      eventSource.close();
+    };
+  }
+
   function loadDemoLibrary() {
     setError(null);
     setLoadingLibrary(false);
     setQuery("");
     setActiveTags([]);
     setSelected(new Set());
+    setLibraryMessage("Loaded local demo songs; Spotify was not contacted.");
     setLoadedCount(mockTracks.length);
     setTotalCount(mockTracks.length);
     setLibrary({
       loaded: mockTracks.length,
       total: mockTracks.length,
       tracks: mockTracks,
+      source: "demo",
     });
   }
 
@@ -133,13 +196,24 @@ function App() {
     const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
     return classifiedTracks.filter((track) => {
       const text = `${track.name} ${track.artists.join(" ")} ${track.album} ${track.tags.join(" ")}`.toLocaleLowerCase();
-      return terms.every((term) => text.includes(term)) &&
-        activeTags.every((tag) => track.tags.includes(tag));
+      const matchesKeywords = terms.every((term) => text.includes(term));
+      const matchesTags = activeTags.length === 0 || (
+        filterMode === "AND"
+          ? activeTags.every((tag) => track.tags.includes(tag))
+          : activeTags.some((tag) => track.tags.includes(tag))
+      );
+      return matchesKeywords && matchesTags;
     });
-  }, [classifiedTracks, query, activeTags]);
+  }, [classifiedTracks, query, activeTags, filterMode]);
 
   function toggleTag(tag: string) {
     setActiveTags((current) => current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag]);
+  }
+
+  function toggleAllTags() {
+    setActiveTags((current) =>
+      current.length === filterTags.length ? [] : [...filterTags],
+    );
   }
 
   function toggleTrack(id: string) {
@@ -213,7 +287,15 @@ function App() {
             >
               {loadingLibrary
                 ? "Loading library..."
-                : "Load Liked Songs"}
+                : "Load Library"}
+            </button>
+
+            <button
+              className="secondary-button"
+              onClick={syncNewSongs}
+              disabled={loadingLibrary || !library || library.source === "demo"}
+            >
+              Sync New Songs
             </button>
 
             <button
@@ -259,6 +341,10 @@ function App() {
               <span className="error-icon">!</span>
               <span>{error}</span>
             </div>
+          )}
+
+          {libraryMessage && !error && (
+            <div className="library-message">{libraryMessage}</div>
           )}
         </section>
 
@@ -322,6 +408,11 @@ function App() {
 
               <div className="library-count">
                 {filteredTracks.length.toLocaleString()} matches · {selected.size.toLocaleString()} selected
+                {library.synced_at && (
+                  <div className="sync-time">
+                    Last synced {new Date(library.synced_at).toLocaleString()}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -334,6 +425,12 @@ function App() {
                 aria-label="Search liked songs"
               />
               <div className="tag-filters">
+                <button
+                  className={`tag-button all-tags ${activeTags.length === filterTags.length ? "active" : ""}`}
+                  onClick={toggleAllTags}
+                >
+                  All filters
+                </button>
                 {filterTags.map((tag) => (
                   <button key={tag} className={`tag-button ${activeTags.includes(tag) ? "active" : ""}`} onClick={() => toggleTag(tag)}>
                     {tag}
@@ -341,9 +438,15 @@ function App() {
                 ))}
               </div>
               <div className="selection-actions">
-                <span>Filters combine using AND</span>
-                <button onClick={selectVisible}>Select matches</button>
-                <button onClick={() => setSelected(new Set())}>Clear selection</button>
+                <div className="filter-mode" aria-label="Filter matching mode">
+                  <span>Match</span>
+                  <button className={filterMode === "AND" ? "active" : ""} onClick={() => setFilterMode("AND")}>AND</button>
+                  <button className={filterMode === "OR" ? "active" : ""} onClick={() => setFilterMode("OR")}>OR</button>
+                </div>
+                <div className="track-actions">
+                  <button onClick={selectVisible}>Select matches</button>
+                  <button onClick={() => setSelected(new Set())}>Clear selection</button>
+                </div>
               </div>
             </div>
 

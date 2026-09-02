@@ -295,7 +295,11 @@ button:disabled {
 
 .library-count {
   color: #b3b3b3;
+  text-align: right;
 }
+
+.sync-time { margin-top: 4px; color: #727272; font-size: .75rem; }
+.library-message { margin-top: 20px; color: #9ae6b4; font-size: .9rem; }
 
 .filters { margin-bottom: 24px; padding: 20px; background: #181818; border-radius: 12px; }
 .search-input { width: 100%; padding: 14px 16px; border: 1px solid #444; border-radius: 8px; color: white; background: #242424; outline: none; }
@@ -303,8 +307,14 @@ button:disabled {
 .tag-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .tag-button { padding: 8px 12px; border-radius: 999px; color: #ddd; background: #333; cursor: pointer; }
 .tag-button.active { color: #000; background: #1ed760; font-weight: 700; }
-.selection-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 16px; color: #888; font-size: .82rem; }
-.selection-actions button { color: white; background: transparent; cursor: pointer; text-decoration: underline; }
+.tag-button.all-tags { border: 1px solid #666; }
+.selection-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; color: #888; font-size: .82rem; }
+.filter-mode { display: flex; align-items: center; gap: 5px; }
+.filter-mode span { margin-right: 4px; }
+.filter-mode button { padding: 5px 9px; border-radius: 6px; color: #aaa; background: #292929; cursor: pointer; }
+.filter-mode button.active { color: #000; background: #1ed760; font-weight: 800; }
+.track-actions { display: flex; gap: 12px; }
+.track-actions button { color: white; background: transparent; cursor: pointer; text-decoration: underline; }
 
 .library-progress {
   width: min(560px, 100%);
