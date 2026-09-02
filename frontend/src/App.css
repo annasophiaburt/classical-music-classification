@@ -328,14 +328,26 @@ button:disabled {
 .track-actions { display: flex; gap: 12px; }
 .track-actions button { color: white; background: transparent; cursor: pointer; text-decoration: underline; }
 
+.progress-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(5px);
+}
+
 .library-progress {
-  width: min(560px, 100%);
-  margin: 36px auto 0;
-  padding: 20px 22px;
+  width: min(520px, 100%);
+  margin: 0;
+  padding: 26px;
 
   background: #181818;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
 
   text-align: left;
 }
@@ -375,6 +387,16 @@ button:disabled {
   border-radius: inherit;
 
   transition: width 0.25s ease;
+}
+
+.progress-bar.indeterminate {
+  width: 38%;
+  animation: loading-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes loading-slide {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(265%); }
 }
 
 .progress-percentage {
@@ -488,6 +510,20 @@ button:disabled {
 
   .hero {
     padding-top: 70px;
+  }
+
+  .progress-modal-backdrop {
+    padding: 14px;
+  }
+
+  .library-progress {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .progress-info {
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .features {

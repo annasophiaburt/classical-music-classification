@@ -311,34 +311,47 @@ function App() {
             </button>
           </div>
 
-          {loadingLibrary &&
-            totalCount > 0 && (
-              <div className="library-progress">
+          {loadingLibrary && (
+            <div className="progress-modal-backdrop">
+              <div
+                className="library-progress"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="loading-title"
+                aria-describedby="loading-status"
+              >
                 <div className="progress-info">
-                  <span>
-                    Scanning your Liked Songs
+                  <span id="loading-title">
+                    {library ? "Syncing new songs" : "Scanning your Liked Songs"}
                   </span>
 
-                  <span className="progress-count">
-                    {loadedCount.toLocaleString()} /{" "}
-                    {totalCount.toLocaleString()}
-                  </span>
+                  {!library && totalCount > 0 && (
+                    <span className="progress-count">
+                      {loadedCount.toLocaleString()} /{" "}
+                      {totalCount.toLocaleString()}
+                    </span>
+                  )}
                 </div>
 
                 <div className="progress-track">
                   <div
-                    className="progress-bar"
+                    className={`progress-bar ${totalCount === 0 || library ? "indeterminate" : ""}`}
                     style={{
-                      width: `${progressPercentage}%`,
+                      width: totalCount === 0 || library ? undefined : `${progressPercentage}%`,
                     }}
                   />
                 </div>
 
-                <div className="progress-percentage">
-                  {progressPercentage}% complete
+                <div className="progress-percentage" id="loading-status" aria-live="polite">
+                  {library
+                    ? "Checking your latest Spotify saves…"
+                    : totalCount > 0
+                      ? `${progressPercentage}% complete`
+                      : "Connecting to Spotify…"}
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
           {error && (
             <div className="error-message">
