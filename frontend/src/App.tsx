@@ -298,6 +298,10 @@ function App() {
               Sync New Songs
             </button>
 
+          </div>
+
+          <div className="demo-action">
+            <span>No Spotify? No problem, see how it works here:</span>
             <button
               className="demo-button"
               onClick={loadDemoLibrary}
