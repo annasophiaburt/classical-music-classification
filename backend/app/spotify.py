@@ -26,7 +26,10 @@ def read_cache():
             cache = json.load(cache_file)
     except (OSError, json.JSONDecodeError):
         return None
-    if not isinstance(cache.get("tracks"), list):
+    tracks = cache.get("tracks")
+    if not isinstance(tracks, list):
+        return None
+    if any(track.get("explicit") is not False for track in tracks):
         return None
     return cache
 
@@ -34,7 +37,11 @@ def read_cache():
 def write_cache(tracks):
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     synced_at = datetime.now(timezone.utc).isoformat()
-    cache = {"synced_at": synced_at, "total": len(tracks), "tracks": tracks}
+    cache = {
+        "synced_at": synced_at,
+        "total": len(tracks),
+        "tracks": tracks,
+    }
     temporary_path = CACHE_PATH.with_suffix(".tmp")
     with temporary_path.open("w", encoding="utf-8") as cache_file:
         json.dump(cache, cache_file, ensure_ascii=False, indent=2)
@@ -48,6 +55,8 @@ def serialize_item(item):
     track = item.get("track")
     if not track or not track.get("id"):
         return None
+    if track.get("explicit") is True:
+        return None
     return {
         "id": track["id"],
         "name": track["name"],
@@ -55,6 +64,7 @@ def serialize_item(item):
         "album": track["album"]["name"],
         "uri": track["uri"],
         "added_at": item.get("added_at"),
+        "explicit": False,
     }
 
 
@@ -144,7 +154,8 @@ async def stream_library():
                     track for item in data["items"]
                     if (track := serialize_item(item)) is not None
                 )
-                yield sse({"type": "progress", "loaded": len(tracks), "total": total})
+                scanned = min(offset + len(data["items"]), total)
+                yield sse({"type": "progress", "loaded": scanned, "total": total})
                 if not data.get("next"):
                     break
                 offset += PAGE_SIZE

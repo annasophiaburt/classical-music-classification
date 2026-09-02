@@ -313,6 +313,7 @@ button:disabled {
 .library-message { margin-top: 20px; color: #9ae6b4; font-size: .9rem; }
 
 .filters { margin-bottom: 24px; padding: 20px; background: #181818; border-radius: 12px; }
+.content-note { margin-bottom: 12px; color: #8f8f8f; font-size: 0.8rem; }
 .search-input { width: 100%; padding: 14px 16px; border: 1px solid #444; border-radius: 8px; color: white; background: #242424; outline: none; }
 .search-input:focus { border-color: #1ed760; }
 .tag-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }

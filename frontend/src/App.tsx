@@ -421,6 +421,9 @@ function App() {
             </div>
 
             <div className="filters">
+              <div className="content-note">
+                Explicit tracks are automatically excluded from your library.
+              </div>
               <input
                 className="search-input"
                 value={query}

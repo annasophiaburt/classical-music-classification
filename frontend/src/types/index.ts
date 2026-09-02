@@ -5,6 +5,7 @@ export type Track = {
   album: string;
   uri: string;
   added_at?: string | null;
+  explicit?: boolean;
 };
 
 export type LibraryResponse = {
