@@ -4,6 +4,7 @@ import spotifyLogo from "./assets/spotify-logo.png";
 import { classifyTrack, filterTags } from "./classification";
 import { mockTracks } from "./mockTracks";
 import type { LibraryResponse } from "./types";
+import { API_URL } from "./config";
 
 function App() {
   const [backendStatus, setBackendStatus] =
@@ -30,7 +31,7 @@ function App() {
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/health")
+    fetch(`${API_URL}/api/health`)
       .then((response) => response.json())
       .then((data) =>
         setBackendStatus(data.status)
@@ -41,8 +42,7 @@ function App() {
   }, []);
 
   function loginWithSpotify() {
-    window.location.href =
-      "http://127.0.0.1:8000/auth/login";
+    window.location.href = `${API_URL}/auth/login`;
   }
 
   function loadLibrary() {
@@ -54,7 +54,7 @@ function App() {
     setLibraryMessage(null);
 
     const eventSource = new EventSource(
-      "http://127.0.0.1:8000/api/library/stream"
+      `${API_URL}/api/library/stream`
     );
 
     eventSource.onmessage = (event) => {
@@ -118,7 +118,7 @@ function App() {
     setLibraryMessage("Checking Spotify for newly liked songs...");
 
     const eventSource = new EventSource(
-      "http://127.0.0.1:8000/api/library/sync/stream"
+      `${API_URL}/api/library/sync/stream`
     );
 
     eventSource.onmessage = (event) => {

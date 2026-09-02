@@ -12,7 +12,8 @@ from app.auth import get_access_token
 
 router = APIRouter(prefix="/api", tags=["spotify"])
 
-CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "library_cache.json"
+DEFAULT_CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "library_cache.json"
+CACHE_PATH = Path(os.getenv("LIBRARY_CACHE_PATH", str(DEFAULT_CACHE_PATH)))
 SPOTIFY_TRACKS_URL = "https://api.spotify.com/v1/me/tracks"
 PAGE_SIZE = 50
 
