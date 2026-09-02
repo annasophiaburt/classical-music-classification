@@ -262,7 +262,7 @@ function App() {
           </div>
 
           <h1>
-            Rediscover the music you already love.
+            Welcome to Classify.
           </h1>
 
           <p>
