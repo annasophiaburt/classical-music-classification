@@ -26,6 +26,7 @@ function App() {
     useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [activeTags, setActiveTags] = useState<string[]>([]);
+  const [showAllMobileTags, setShowAllMobileTags] = useState(false);
   const [filterMode, setFilterMode] = useState<"AND" | "OR">("AND");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
@@ -83,7 +84,7 @@ function App() {
         setLoadingLibrary(false);
         setLibraryMessage(
           data.source === "cache"
-            ? "Loaded from your saved cache with no Spotify requests."
+            ? "Loaded from your saved cache with no API Spotify requests."
             : "Initial Spotify library downloaded and cached.",
         );
         eventSource.close();
@@ -482,13 +483,26 @@ function App() {
               />
               <div className="tag-filters">
                 <button
+                  className="mobile-more-tags"
+                  onClick={() => setShowAllMobileTags((current) => !current)}
+                  aria-expanded={showAllMobileTags}
+                >
+                  {showAllMobileTags ? "Show fewer tags" : "Show more tags"}
+                  <span aria-hidden="true">{showAllMobileTags ? "↑" : "↓"}</span>
+                </button>
+                <button
                   className={`tag-button all-tags ${activeTags.length === filterTags.length ? "active" : ""}`}
                   onClick={toggleAllTags}
                 >
-                  All filters
+                  <span className="desktop-tag-label">All filters</span>
+                  <span className="mobile-tag-label">All tags</span>
                 </button>
-                {filterTags.map((tag) => (
-                  <button key={tag} className={`tag-button ${activeTags.includes(tag) ? "active" : ""}`} onClick={() => toggleTag(tag)}>
+                {filterTags.map((tag, index) => (
+                  <button
+                    key={tag}
+                    className={`tag-button ${index >= 5 ? "mobile-extra-tag" : ""} ${showAllMobileTags ? "mobile-tags-expanded" : ""} ${activeTags.includes(tag) ? "active" : ""}`}
+                    onClick={() => toggleTag(tag)}
+                  >
                     {tag}
                   </button>
                 ))}

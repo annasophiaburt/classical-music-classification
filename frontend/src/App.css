@@ -320,6 +320,8 @@ button:disabled {
 .tag-button { padding: 8px 12px; border-radius: 999px; color: #ddd; background: #333; cursor: pointer; }
 .tag-button.active { color: #000; background: #1ed760; font-weight: 700; }
 .tag-button.all-tags { border: 1px solid #666; }
+.mobile-tag-label,
+.mobile-more-tags { display: none; }
 .selection-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; color: #888; font-size: .82rem; }
 .filter-mode { display: flex; align-items: center; gap: 5px; }
 .filter-mode span { margin-right: 4px; }
@@ -515,6 +517,29 @@ button:disabled {
 /* ---------- Responsive ---------- */
 
 @media (max-width: 800px) {
+  .desktop-tag-label { display: none; }
+  .mobile-tag-label { display: inline; }
+  .mobile-more-tags {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-basis: 100%;
+    gap: 7px;
+    padding: 8px 13px;
+    border: 1px solid #1ed760;
+    border-radius: 8px;
+    color: #1ed760;
+    background: transparent;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .mobile-more-tags:hover,
+  .mobile-more-tags:focus-visible {
+    color: #000;
+    background: #1ed760;
+  }
+  .mobile-extra-tag:not(.mobile-tags-expanded) { display: none; }
+
   .topbar {
     padding: 0 20px;
   }
