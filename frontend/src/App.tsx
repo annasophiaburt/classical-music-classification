@@ -471,7 +471,7 @@ function App() {
 
             <div className="filters">
               <div className="content-note">
-                Explicit tracks are automatically excluded from your library.
+                Explicit tracks are automatically excluded from your library. Tag filtering uses text matches in track titles, artists, and albums. Composer and artist tags come from a predefined list, so results may not always be accurate or complete.
               </div>
               <input
                 className="search-input"
