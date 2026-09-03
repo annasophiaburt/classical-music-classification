@@ -1,6 +1,7 @@
 import base64
 import os
 import secrets
+import time
 from urllib.parse import urlencode
 
 import httpx
@@ -91,9 +92,52 @@ async def callback(code: str, state: str):
         "refresh_token"
     )
     spotify_tokens["expires_in"] = tokens["expires_in"]
+    spotify_tokens["expires_at"] = time.time() + tokens["expires_in"]
 
     return RedirectResponse(FRONTEND_URL)
 
 
 def get_access_token():
     return spotify_tokens.get("access_token")
+
+
+async def get_valid_access_token():
+    access_token = spotify_tokens.get("access_token")
+    if not access_token:
+        return None
+
+    # Refresh slightly early so a token cannot expire during a multi-batch upload.
+    if time.time() < spotify_tokens.get("expires_at", 0) - 60:
+        return access_token
+
+    refresh_token = spotify_tokens.get("refresh_token")
+    if not refresh_token:
+        spotify_tokens.clear()
+        return None
+
+    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            "https://accounts.spotify.com/api/token",
+            headers={
+                "Authorization": f"Basic {encoded_credentials}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+            },
+        )
+
+    if response.status_code != 200:
+        spotify_tokens.clear()
+        return None
+
+    tokens = response.json()
+    spotify_tokens["access_token"] = tokens["access_token"]
+    spotify_tokens["expires_in"] = tokens["expires_in"]
+    spotify_tokens["expires_at"] = time.time() + tokens["expires_in"]
+    if tokens.get("refresh_token"):
+        spotify_tokens["refresh_token"] = tokens["refresh_token"]
+    return spotify_tokens["access_token"]

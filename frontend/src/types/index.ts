@@ -23,3 +23,10 @@ export type Classification = {
 };
 
 export type ClassifiedTrack = Track & Classification;
+
+export type PlaylistResponse = {
+  id: string;
+  name: string;
+  url: string | null;
+  tracks_added: number;
+};

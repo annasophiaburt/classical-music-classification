@@ -3,7 +3,7 @@ import "./App.css";
 import spotifyLogo from "./assets/spotify-logo.png";
 import { classifyTrack, filterTags } from "./classification";
 import { mockTracks } from "./mockTracks";
-import type { LibraryResponse } from "./types";
+import type { LibraryResponse, PlaylistResponse } from "./types";
 import { API_URL } from "./config";
 
 function App() {
@@ -29,6 +29,9 @@ function App() {
   const [filterMode, setFilterMode] = useState<"AND" | "OR">("AND");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
+  const [playlistName, setPlaylistName] = useState("");
+  const [creatingPlaylist, setCreatingPlaylist] = useState(false);
+  const [playlistResult, setPlaylistResult] = useState<PlaylistResponse | null>(null);
 
   useEffect(() => {
     fetch(`${API_URL}/api/health`)
@@ -230,6 +233,39 @@ function App() {
 
   function selectVisible() {
     setSelected((current) => new Set([...current, ...filteredTracks.map((track) => track.id)]));
+  }
+
+  async function createPlaylist(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const name = playlistName.trim();
+    const uris = classifiedTracks
+      .filter((track) => selected.has(track.id))
+      .map((track) => track.uri);
+
+    if (!name || uris.length === 0 || library?.source === "demo") return;
+
+    setCreatingPlaylist(true);
+    setPlaylistResult(null);
+    setError(null);
+    try {
+      const response = await fetch(`${API_URL}/api/playlists`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, uris }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.detail || "Spotify could not create the playlist.");
+      }
+      const result: PlaylistResponse = await response.json();
+      setPlaylistResult(result);
+      setPlaylistName("");
+      setSelected(new Set());
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Spotify could not create the playlist.");
+    } finally {
+      setCreatingPlaylist(false);
+    }
   }
 
   return (
@@ -469,6 +505,39 @@ function App() {
                 </div>
               </div>
             </div>
+
+            <form className="playlist-builder" onSubmit={createPlaylist}>
+              <div>
+                <label htmlFor="playlist-name">Create a Spotify playlist</label>
+                <div className="playlist-help">
+                  Add all {selected.size.toLocaleString()} selected songs to a new private playlist.
+                </div>
+              </div>
+              <div className="playlist-controls">
+                <input
+                  id="playlist-name"
+                  value={playlistName}
+                  onChange={(event) => setPlaylistName(event.target.value)}
+                  placeholder="Playlist name"
+                  maxLength={100}
+                  disabled={creatingPlaylist || library.source === "demo"}
+                />
+                <button
+                  className="primary-button"
+                  type="submit"
+                  disabled={creatingPlaylist || !playlistName.trim() || selected.size === 0 || library.source === "demo"}
+                >
+                  {creatingPlaylist ? "Creating..." : "Create playlist"}
+                </button>
+              </div>
+              {library.source === "demo" && <div className="playlist-status">Connect Spotify and load your library to create playlists.</div>}
+              {playlistResult && (
+                <div className="playlist-status success" role="status">
+                  Added {playlistResult.tracks_added.toLocaleString()} songs to {playlistResult.name}.
+                  {playlistResult.url && <a href={playlistResult.url} target="_blank" rel="noreferrer">Open in Spotify</a>}
+                </div>
+              )}
+            </form>
 
             <div className="track-list">
               {filteredTracks.map(

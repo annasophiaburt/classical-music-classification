@@ -7,8 +7,9 @@ from pathlib import Path
 import httpx
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field, validator
 
-from app.auth import get_access_token
+from app.auth import get_valid_access_token
 
 router = APIRouter(prefix="/api", tags=["spotify"])
 
@@ -16,6 +17,25 @@ DEFAULT_CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "library_
 CACHE_PATH = Path(os.getenv("LIBRARY_CACHE_PATH", str(DEFAULT_CACHE_PATH)))
 SPOTIFY_TRACKS_URL = "https://api.spotify.com/v1/me/tracks"
 PAGE_SIZE = 50
+PLAYLIST_BATCH_SIZE = 100
+
+
+class PlaylistRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    uris: list[str] = Field(min_length=1)
+
+    @validator("name")
+    def validate_name(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("Playlist name cannot be blank")
+        return value
+
+    @validator("uris")
+    def validate_uris(cls, value):
+        if any(not uri.startswith("spotify:track:") for uri in value):
+            raise ValueError("Every URI must be a Spotify track URI")
+        return list(dict.fromkeys(value))
 
 
 def read_cache():
@@ -91,7 +111,7 @@ def spotify_error(response):
 
 @router.get("/me")
 async def get_me():
-    access_token = get_access_token()
+    access_token = await get_valid_access_token()
     if not access_token:
         raise HTTPException(status_code=401, detail="Not logged into Spotify")
     async with httpx.AsyncClient() as client:
@@ -102,6 +122,56 @@ async def get_me():
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response.json()
+
+
+@router.post("/playlists", status_code=201)
+async def create_playlist(payload: PlaylistRequest):
+    access_token = await get_valid_access_token()
+    if not access_token:
+        raise HTTPException(
+            status_code=401,
+            detail="Spotify authorization expired. Connect Spotify again.",
+        )
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+    async with httpx.AsyncClient(timeout=30) as client:
+        playlist_response = await client.post(
+            "https://api.spotify.com/v1/me/playlists",
+            headers=headers,
+            json={
+                "name": payload.name,
+                "public": False,
+                "description": "Created with Classify",
+            },
+        )
+        if playlist_response.status_code != 201:
+            raise HTTPException(
+                status_code=playlist_response.status_code,
+                detail=f"Spotify could not create the playlist: {playlist_response.text}",
+            )
+
+        playlist = playlist_response.json()
+        for start in range(0, len(payload.uris), PLAYLIST_BATCH_SIZE):
+            tracks_response = await client.post(
+                f"https://api.spotify.com/v1/playlists/{playlist['id']}/items",
+                headers=headers,
+                json={"uris": payload.uris[start:start + PLAYLIST_BATCH_SIZE]},
+            )
+            if tracks_response.status_code != 201:
+                raise HTTPException(
+                    status_code=tracks_response.status_code,
+                    detail=(
+                        "The playlist was created, but Spotify could not add all tracks. "
+                        + tracks_response.text
+                    ),
+                )
+
+    return {
+        "id": playlist["id"],
+        "name": playlist["name"],
+        "url": playlist.get("external_urls", {}).get("spotify"),
+        "tracks_added": len(payload.uris),
+    }
 
 
 @router.get("/library")
@@ -134,7 +204,7 @@ async def stream_library():
             })
             return
 
-        access_token = get_access_token()
+        access_token = await get_valid_access_token()
         if not access_token:
             yield sse({"type": "error", "status": 401, "message": "Not logged into Spotify"})
             return
@@ -176,7 +246,7 @@ async def stream_library():
 @router.get("/library/sync/stream")
 async def sync_library():
     cached = read_cache()
-    access_token = get_access_token()
+    access_token = await get_valid_access_token()
     if not cached:
         raise HTTPException(status_code=409, detail="Load the full library before syncing")
     if not access_token:
