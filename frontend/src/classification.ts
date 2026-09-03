@@ -14,7 +14,7 @@ const rules: Rule[] = [
   { tag: "Contemporary classical artist", terms: ["philip glass", "arvo part", "arvo pärt", "john rutter", "max richter", "ludovico einaudi", "olafur arnalds", "ólafur arnalds", "nils frahm"] },
   { tag: "Modern classical style", terms: ["modern classical", "contemporary classical", "neo-classical", "neoclassical"] },
   { tag: "Film/TV composer", terms: ["hans zimmer", "john williams", "ennio morricone", "ludwig goransson", "ludwig göransson", "alexandre desplat", "howard shore", "james horner", "thomas newman", "john barry", "bernard herrmann"] },
-  { tag: "Film/TV score", terms: ["cinematic", "soundtrack", "motion picture", "original score", "motion picture score", "film score", "theme from", "music from"] },
+  { tag: "Score/Soundtrack", terms: ["cinematic", "soundtrack", "motion picture", "original score", "motion picture score", "film score", "theme from", "music from"] },
   { tag: "Choral composer", terms: ["john rutter", "eric whitacre", "morten lauridsen", "thomas tallis", "william byrd"] },
   { tag: "Choral", terms: ["choir", "choral", "chorus", "chorale", "requiem", "cantata", "oratorio", "vespers", "motet", "anthem", "a cappella"] },
   { tag: "Opera", terms: ["opera", "verdi", "puccini", "rossini", "donizetti", "bizet", "bellini"] },

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
-import spotifyLogo from "./assets/spotify-logo.png";
 import { classifyTrack, filterTags } from "./classification";
 import { mockTracks } from "./mockTracks";
 import type { LibraryResponse, PlaylistResponse } from "./types";
@@ -275,8 +274,8 @@ function App() {
         <div className="brand">
           <img
             className="brand-logo"
-            src={spotifyLogo}
-            alt="Spotify"
+            src="/favicon.svg"
+            alt="Classify music note"
           />
 
           <span>Classify</span>
