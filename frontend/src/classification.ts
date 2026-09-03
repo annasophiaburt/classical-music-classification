@@ -7,20 +7,22 @@ const rules: Rule[] = [
   { tag: "Baroque style", terms: ["baroque"] },
   { tag: "Classical-era composer", terms: ["mozart", "haydn", "beethoven", "gluck", "clementi"] },
   { tag: "Classical style", terms: ["classical"] },
-  { tag: "Romantic-era composer", terms: ["chopin", "liszt", "tchaikovsky", "rachmaninoff", "schumann", "brahms", "mendelssohn", "mahler", "wagner", "dvorak", "grieg", "saint-saens"] },
+  { tag: "Romantic-era composer", terms: ["chopin", "liszt", "tchaikovsky", "rachmaninoff", "schumann", "brahms", "mendelssohn", "mahler", "wagner", "dvorak", "dvořák", "grieg", "saint-saens", "saint-saëns"] },
   { tag: "Impressionist composer", terms: ["debussy", "ravel", "satie"] },
-  { tag: "Impressionist style", terms: ["impressionist"] },
-  { tag: "Modern classical artist", terms: ["shostakovich", "prokofiev", "stravinsky", "philip glass", "max richter", "ludovico einaudi", "olafur arnalds", "nils frahm"] },
-  { tag: "Modern classical style", terms: ["modern classical", "neo-classical", "neoclassical"] },
-  { tag: "Film composer", terms: ["hans zimmer", "john williams", "ennio morricone", "ludwig goransson", "alexandre desplat"] },
-  { tag: "Film score", terms: ["cinematic", "soundtrack", "original motion picture", "film score"] },
-  { tag: "Choral", terms: ["choir", "choral", "chorus", "chorale", "voices", "singers", "requiem", "mass in", "missa", "motet", "cantata", "oratorio", "vespers"] },
-  { tag: "Opera", terms: ["opera", "overture", "verdi", "puccini", "rossini", "donizetti"] },
+  { tag: "Impressionist style", terms: ["impressionist", "impressionism"] },
+  { tag: "20th-century classical composer", terms: ["shostakovich", "prokofiev", "stravinsky", "benjamin britten", "britten", "ralph vaughan williams", "vaughan williams", "holst", "sibelius", "bartok", "bartók", "messiaen", "copland"] },
+  { tag: "Contemporary classical artist", terms: ["philip glass", "arvo part", "arvo pärt", "john rutter", "max richter", "ludovico einaudi", "olafur arnalds", "ólafur arnalds", "nils frahm"] },
+  { tag: "Modern classical style", terms: ["modern classical", "contemporary classical", "neo-classical", "neoclassical"] },
+  { tag: "Film/TV composer", terms: ["hans zimmer", "john williams", "ennio morricone", "ludwig goransson", "ludwig göransson", "alexandre desplat", "howard shore", "james horner", "thomas newman", "john barry", "bernard herrmann"] },
+  { tag: "Film/TV score", terms: ["cinematic", "soundtrack", "motion picture", "original score", "motion picture score", "film score", "theme from", "music from"] },
+  { tag: "Choral composer", terms: ["john rutter", "eric whitacre", "morten lauridsen", "thomas tallis", "william byrd"] },
+  { tag: "Choral", terms: ["choir", "choral", "chorus", "chorale", "requiem", "cantata", "oratorio", "vespers", "motet", "anthem", "a cappella"] },
+  { tag: "Opera", terms: ["opera", "verdi", "puccini", "rossini", "donizetti", "bizet", "bellini"] },
   { tag: "Piano", terms: ["piano", "pianist"] },
-  { tag: "Strings", terms: ["violin", "viola", "cello", "string quartet", "strings"] },
+  { tag: "Strings", terms: ["violin", "viola", "cello", "string quartet", "string orchestra", "strings"] },
   { tag: "Orchestral", terms: ["orchestra", "orchestral", "philharmonic", "symphony", "symphonic", "concerto"] },
-  { tag: "Chamber", terms: ["quartet", "quintet", "trio"] },
-  { tag: "Sacred", terms: ["sacred", "requiem", "agnus dei", "ave maria", "gloria", "kyrie", "sanctus"] },
+  { tag: "Chamber", terms: ["chamber music", "string quartet", "quartet", "quintet", "sextet", "trio"] },
+  { tag: "Sacred", terms: ["sacred", "requiem", "agnus dei", "ave maria", "gloria", "kyrie", "sanctus", "benedictus", "magnificat", "nunc dimittis", "te deum", "stabat mater"] },
 ];
 
 const formRules: Rule[] = [
@@ -37,12 +39,12 @@ const formRules: Rule[] = [
 ];
 
 export const filterTags = [
-  "Baroque composer", "Baroque style", "Classical-era composer", "Classical style",
-  "Romantic-era composer", "Impressionist composer", "Impressionist style",
-  "Modern classical artist", "Modern classical style", "Film composer", "Film score",
-  "Choral", "Opera", "Sacred", "Piano", "Strings", "Orchestral", "Chamber",
-  "Major", "Minor",
-  "Symphony", "Concerto", "Sonata", "Suite", "Quartet", "Nocturne", "Prelude", "Etude", "Fugue", "Variations",
+  ...new Set([
+    ...rules.map((rule) => rule.tag),
+    ...formRules.map((rule) => rule.tag),
+    "Major",
+    "Minor",
+  ]),
 ];
 
 function normalize(value: string) {
