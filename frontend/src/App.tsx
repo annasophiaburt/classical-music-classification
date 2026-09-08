@@ -391,6 +391,10 @@ function App() {
                       ? `${progressPercentage}% complete`
                       : "Connecting to Spotify…"}
                 </div>
+
+                <div className="progress-note">
+                  Explicit songs are automatically excluded.
+                </div>
               </div>
             </div>
           )}
