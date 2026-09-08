@@ -200,10 +200,13 @@ function App() {
     return classifiedTracks.filter((track) => {
       const text = `${track.name} ${track.artists.join(" ")} ${track.album} ${track.tags.join(" ")}`.toLocaleLowerCase();
       const matchesKeywords = terms.every((term) => text.includes(term));
+      const matchesTag = (tag: string) => tag === "Major" || tag === "Minor"
+        ? track.tags.some((trackTag) => trackTag.endsWith(` ${tag}`))
+        : track.tags.includes(tag);
       const matchesTags = activeTags.length === 0 || (
         filterMode === "AND"
-          ? activeTags.every((tag) => track.tags.includes(tag))
-          : activeTags.some((tag) => track.tags.includes(tag))
+          ? activeTags.every(matchesTag)
+          : activeTags.some(matchesTag)
       );
       return matchesKeywords && matchesTags;
     });
@@ -234,6 +237,9 @@ function App() {
   function selectVisible() {
     setSelected((current) => new Set([...current, ...filteredTracks.map((track) => track.id)]));
   }
+
+  const allVisibleSelected = filteredTracks.length > 0
+    && filteredTracks.every((track) => selected.has(track.id));
 
   async function createPlaylist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -507,14 +513,42 @@ function App() {
                 ))}
               </div>
               <div className="selection-actions">
-                <div className="filter-mode" aria-label="Filter matching mode">
-                  <span>Match</span>
-                  <button className={filterMode === "AND" ? "active" : ""} onClick={() => setFilterMode("AND")}>AND</button>
-                  <button className={filterMode === "OR" ? "active" : ""} onClick={() => setFilterMode("OR")}>OR</button>
+                <div className="filter-mode-group">
+                  <span className="control-label">Songs must match</span>
+                  <div className="filter-mode" role="group" aria-label="How selected tags are combined">
+                    <button
+                      className={filterMode === "AND" ? "active" : ""}
+                      onClick={() => setFilterMode("AND")}
+                      aria-pressed={filterMode === "AND"}
+                    >
+                      All selected tags
+                    </button>
+                    <button
+                      className={filterMode === "OR" ? "active" : ""}
+                      onClick={() => setFilterMode("OR")}
+                      aria-pressed={filterMode === "OR"}
+                    >
+                      Any selected tag
+                    </button>
+                  </div>
                 </div>
                 <div className="track-actions">
-                  <button onClick={selectVisible}>Select matches</button>
-                  <button onClick={() => setSelected(new Set())}>Clear selection</button>
+                  <button
+                    className="select-results"
+                    onClick={selectVisible}
+                    disabled={filteredTracks.length === 0 || allVisibleSelected}
+                  >
+                    {allVisibleSelected
+                      ? `All ${filteredTracks.length.toLocaleString()} shown selected`
+                      : `Select all ${filteredTracks.length.toLocaleString()} shown`}
+                  </button>
+                  <button
+                    className="clear-selection"
+                    onClick={() => setSelected(new Set())}
+                    disabled={selected.size === 0}
+                  >
+                    Clear all selections
+                  </button>
                 </div>
               </div>
             </div>

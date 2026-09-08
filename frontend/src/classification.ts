@@ -16,34 +16,26 @@ const rules: Rule[] = [
   { tag: "Film/TV composer", terms: ["hans zimmer", "john williams", "ennio morricone", "ludwig goransson", "ludwig göransson", "alexandre desplat", "howard shore", "james horner", "thomas newman", "john barry", "bernard herrmann"] },
   { tag: "Score/Soundtrack", terms: ["cinematic", "soundtrack", "motion picture", "original score", "motion picture score", "film score", "theme from", "music from"] },
   { tag: "Choral composer", terms: ["john rutter", "eric whitacre", "morten lauridsen", "thomas tallis", "william byrd"] },
-  { tag: "Choral", terms: ["choir", "choral", "chorus", "chorale", "requiem", "cantata", "oratorio", "vespers", "motet", "anthem", "a cappella"] },
+  { tag: "Choral", terms: ["choir", "choral", "chorus", "chorale", "requiem", "cantata", "oratorio", "vespers", "motet", "a cappella"] },
   { tag: "Opera", terms: ["opera", "verdi", "puccini", "rossini", "donizetti", "bizet", "bellini"] },
   { tag: "Piano", terms: ["piano", "pianist"] },
   { tag: "Strings", terms: ["violin", "viola", "cello", "string quartet", "string orchestra", "strings"] },
-  { tag: "Orchestral", terms: ["orchestra", "orchestral", "philharmonic", "symphony", "symphonic", "concerto"] },
+  { tag: "Orchestral", terms: ["orchestra", "orchestral", "philharmonic", "symphonic", "concerto"] },
   { tag: "Chamber", terms: ["chamber music", "string quartet", "quartet", "quintet", "sextet", "trio"] },
   { tag: "Sacred", terms: ["sacred", "requiem", "agnus dei", "ave maria", "gloria", "kyrie", "sanctus", "benedictus", "magnificat", "nunc dimittis", "te deum", "stabat mater"] },
 ];
 
 const formRules: Rule[] = [
-  { tag: "Symphony", terms: ["symphony", "sinfonia"] },
-  { tag: "Concerto", terms: ["concerto"] },
-  { tag: "Sonata", terms: ["sonata"] },
-  { tag: "Suite", terms: ["suite"] },
-  { tag: "Quartet", terms: ["quartet"] },
-  { tag: "Nocturne", terms: ["nocturne"] },
-  { tag: "Prelude", terms: ["prelude"] },
-  { tag: "Etude", terms: ["etude"] },
-  { tag: "Fugue", terms: ["fugue"] },
+  { tag: "Intermezzo", terms: ["intermezzo"] },
   { tag: "Variations", terms: ["variation", "variations"] },
 ];
 
 export const filterTags = [
   ...new Set([
-    ...rules.map((rule) => rule.tag),
-    ...formRules.map((rule) => rule.tag),
     "Major",
     "Minor",
+    ...rules.map((rule) => rule.tag),
+    ...formRules.map((rule) => rule.tag).filter((tag) => tag !== "Variations"),
   ]),
 ];
 
@@ -69,10 +61,17 @@ function titleCase(value: string) {
 
 function structuredClassifications(searchable: string): Classification[] {
   const results: Classification[] = [];
-  const numberedWork = searchable.match(/(?:^|[^\p{L}\p{N}])(symphony|sinfonia|concerto|sonata|suite|string quartet|quartet|nocturne|prelude|etude|fugue)\s+(?:no\.?|number)\s*(\d+)(?=$|[^\p{L}\p{N}])/u);
+  const numberedWork = searchable.match(/(?:^|[^\p{L}\p{N}])(symphony|sinfonia|concerto|sonata|string quartet|quartet|nocturne|prelude|intermezzo|etude|fugue)\s+(?:no\.?|number)\s*(\d+)(?=$|[^\p{L}\p{N}])/u);
   if (numberedWork) {
     const form = numberedWork[1] === "sinfonia" ? "Symphony" : titleCase(numberedWork[1]);
     const tag = `${form} No. ${numberedWork[2]}`;
+    results.push({ tags: [tag], reasons: [`${tag}: matched numbered work`] });
+  }
+
+  const numberedSuite = searchable.match(/(?:^|[^\p{L}\p{N}])suite\s*(?:(?:no\.?|n[°º]|number)\s*|:\s*)(\d+|[ivxlcdm]+)(?=$|[^\p{L}\p{N}])/u);
+  if (numberedSuite) {
+    const suiteNumber = /^\d+$/.test(numberedSuite[1]) ? numberedSuite[1] : numberedSuite[1].toUpperCase();
+    const tag = `Suite No. ${suiteNumber}`;
     results.push({ tags: [tag], reasons: [`${tag}: matched numbered work`] });
   }
 
@@ -105,8 +104,8 @@ function structuredClassifications(searchable: string): Classification[] {
     const tonality = titleCase(key[4]);
     const tag = `${key[1].toUpperCase()}${accidental} ${tonality}`;
     results.push({
-      tags: [tag, tonality],
-      reasons: [`${tag}: matched musical key`, `${tonality}: matched musical-key tonality`],
+      tags: [tag],
+      reasons: [`${tag}: matched musical key`],
     });
   }
 
