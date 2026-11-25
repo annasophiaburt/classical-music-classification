@@ -40,6 +40,8 @@ Import the full library once, then use **Sync New Songs** for updates. It starts
 
 ### 4. Filter the library
 
+https://github.com/user-attachments/assets/3ab3613a-041b-440f-aa01-2ee1a32d3e0d
+
 Classify assigns tags by matching whole words and phrases in track titles, artist names, and album names. For example, “string quartet” adds both the **Strings** and **Chamber** tags. Regular expressions (regex) pick out structured details such as “in C Minor”, “Symphony No. 5”, “Op. 67”, and “BWV 1043”. Eg. the **Minor** filter matches any track tagged with a minor key.
 
 Keyword search checks titles, artists, albums, and assigned tags for every search term, regardless of capitalisation. When you also select tags, **AND** requires all selected tags and **OR** requires at least one.
