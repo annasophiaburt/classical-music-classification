@@ -14,7 +14,7 @@ The project brings together a React and TypeScript interface, a Python API, Spot
 
 ### 1. Home page
 
-<video controls preload="metadata" width="640" src="demo%20videos/1%20-%20home%20page.mp4"></video>
+https://github.com/user-attachments/assets/47c7deee-56ca-41be-b37d-ea46213aa455
 
 See the Classify home page, where you can connect to Spotify or choose **Load Demo Songs** to browse and filter a sample library without connecting to Spotify or making API requests.
 
@@ -22,7 +22,7 @@ See the Classify home page, where you can connect to Spotify or choose **Load De
 
 ### 2. Connect to Spotify
 
-<video controls preload="metadata" width="640" src="demo%20videos/2%20-%20connect%20to%20spotify.mp4"></video>
+https://github.com/user-attachments/assets/29c00c46-24de-4b39-84ed-6dd49ff7b40d
 
 Authorise Classify to access your Spotify Liked Songs. Explicit tracks are automatically excluded.
 
@@ -30,7 +30,7 @@ Authorise Classify to access your Spotify Liked Songs. Explicit tracks are autom
 
 ### 3. Load the library
 
-<video controls preload="metadata" width="640" src="demo%20videos/3%20-%20syncing%20library.mp4"></video>
+https://github.com/user-attachments/assets/e096832e-3d07-4871-bd49-8488fe86d085
 
 Import your Spotify Liked Songs and follow the live loading progress. Classify requests up to 50 songs per batch, with one Spotify API request per batch. A library of 1,000 Liked Songs takes 20 requests to retrieve.
 
@@ -40,8 +40,6 @@ Import the full library once, then use **Sync New Songs** for updates. It starts
 
 ### 4. Filter the library
 
-<video controls preload="metadata" width="640" src="demo%20videos/4%20-%20filter%20demo.mp4"></video>
-
 Classify assigns tags by matching whole words and phrases in track titles, artist names, and album names. For example, “string quartet” adds both the **Strings** and **Chamber** tags. Regular expressions (regex) pick out structured details such as “in C Minor”, “Symphony No. 5”, “Op. 67”, and “BWV 1043”. Eg. the **Minor** filter matches any track tagged with a minor key.
 
 Keyword search checks titles, artists, albums, and assigned tags for every search term, regardless of capitalisation. When you also select tags, **AND** requires all selected tags and **OR** requires at least one.
@@ -50,7 +48,7 @@ Keyword search checks titles, artists, albums, and assigned tags for every searc
 
 ### 5. Create a playlist
 
-<video controls preload="metadata" width="640" src="demo%20videos/5%20-%20playlist%20creation.mp4"></video>
+https://github.com/user-attachments/assets/ddf7f437-f520-40bd-b6e9-2d8c3bea4528
 
 Select tracks from your results and save them as a private Spotify playlist.
 
@@ -58,7 +56,7 @@ Select tracks from your results and save them as a private Spotify playlist.
 
 ### 6. Sync a newly liked song
 
-<video controls preload="metadata" width="640" src="demo%20videos/6%20-%20sync%20new%20song.mp4"></video>
+https://github.com/user-attachments/assets/1065219a-8f17-449d-96ae-8000df5a6720
 
 Add a newly liked song to your cached library using incremental sync, which reduces repeated Spotify API requests.
 
@@ -66,7 +64,7 @@ Add a newly liked song to your cached library using incremental sync, which redu
 
 ### 7. Mobile walkthrough
 
-<video controls preload="metadata" width="640" src="demo%20videos/mobile.mp4"></video>
+https://github.com/user-attachments/assets/7446117f-7b07-47f1-a31d-e433aac973d0
 
 See how Classify adapts to smaller screens. On mobile, the tag filters expand when needed, leaving more room for the track list.
 
