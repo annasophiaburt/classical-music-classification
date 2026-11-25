@@ -1,4 +1,4 @@
-﻿# Classify | Classical Music Classification
+﻿# Classify | Classical Music Classification 🎻 🎵
 
 A full-stack web application that helps listeners rediscover classical music in their Spotify Liked Songs and turn their discoveries into playlists.
 
@@ -10,13 +10,75 @@ Classify helps me narrow down the possibilities using what I do remember, such a
 
 The project brings together a React and TypeScript interface, a Python API, Spotify integration, and deployment across Cloudflare and Render.
 
+## Demo videos
+
+### 1. Home page
+
+<video controls preload="metadata" width="640" src="demo%20videos/1%20-%20home%20page.mp4"></video>
+
+See the Classify home page, where you can connect to Spotify or choose **Load Demo Songs** to browse and filter a sample library without connecting to Spotify or making API requests.
+
+[Watch home page](demo%20videos/1%20-%20home%20page.mp4)
+
+### 2. Connect to Spotify
+
+<video controls preload="metadata" width="640" src="demo%20videos/2%20-%20connect%20to%20spotify.mp4"></video>
+
+Authorise Classify to access your Spotify Liked Songs. Explicit tracks are automatically excluded.
+
+[Watch the Spotify connection demo](demo%20videos/2%20-%20connect%20to%20spotify.mp4)
+
+### 3. Load the library
+
+<video controls preload="metadata" width="640" src="demo%20videos/3%20-%20syncing%20library.mp4"></video>
+
+Import your Spotify Liked Songs and follow the live loading progress. Classify requests up to 50 songs per batch, with one Spotify API request per batch. A library of 1,000 Liked Songs takes 20 requests to retrieve.
+
+Import the full library once, then use **Sync New Songs** for updates. It starts with the newest Liked Songs and stops when it reaches a track already in the cache, reducing API requests.
+
+[Watch sync the library](demo%20videos/3%20-%20syncing%20library.mp4)
+
+### 4. Filter the library
+
+<video controls preload="metadata" width="640" src="demo%20videos/4%20-%20filter%20demo.mp4"></video>
+
+Classify assigns tags by matching whole words and phrases in track titles, artist names, and album names. For example, “string quartet” adds both the **Strings** and **Chamber** tags. Regular expressions (regex) pick out structured details such as “in C Minor”, “Symphony No. 5”, “Op. 67”, and “BWV 1043”. Eg. the **Minor** filter matches any track tagged with a minor key.
+
+Keyword search checks titles, artists, albums, and assigned tags for every search term, regardless of capitalisation. When you also select tags, **AND** requires all selected tags and **OR** requires at least one.
+
+[Watch filter the library](demo%20videos/4%20-%20filter%20demo.mp4)
+
+### 5. Create a playlist
+
+<video controls preload="metadata" width="640" src="demo%20videos/5%20-%20playlist%20creation.mp4"></video>
+
+Select tracks from your results and save them as a private Spotify playlist.
+
+[Watch create a playlist](demo%20videos/5%20-%20playlist%20creation.mp4)
+
+### 6. Sync a newly liked song
+
+<video controls preload="metadata" width="640" src="demo%20videos/6%20-%20sync%20new%20song.mp4"></video>
+
+Add a newly liked song to your cached library using incremental sync, which reduces repeated Spotify API requests.
+
+[Watch sync a newly liked song](demo%20videos/6%20-%20sync%20new%20song.mp4)
+
+### 7. Mobile walkthrough
+
+<video controls preload="metadata" width="640" src="demo%20videos/mobile.mp4"></video>
+
+See how Classify adapts to smaller screens. On mobile, the tag filters expand when needed, leaving more room for the track list.
+
+[Watch mobile walkthrough](demo%20videos/mobile.mp4)
+
 ## Live application and access
 
 **Main URL: [classify-project.pages.dev](https://classify-project.pages.dev/)**
 
 I use **Cloudflare Pages** to host the frontend and **Render** to host the FastAPI backend.
 
-**Access is limited to approved accounts. Please [message me on LinkedIn](https://www.linkedin.com/in/anna-burt-b70a2020a/) to request access or arrange a demo.** I'm happy to walk through the application, its architecture, and the implementation with prospective employers and collaborators.
+**Access is limited to approved accounts. Please [message me on LinkedIn](https://www.linkedin.com/in/anna-burt-b70a2020a/) to request access.**
 
 ### Spotify API limitations
 
@@ -27,16 +89,6 @@ Spotify's [Developer Policy](https://developer.spotify.com/policy) prohibits fee
 Spotify also applies API request quotas and rate limits. Library caching and incremental sync reduce repeated requests, but loading or syncing may still require waiting when a limit is reached.
 
 **Try "Load Demo Songs" to explore the app without connecting Spotify.** This option loads a local sample library for browsing, classification, and filtering without making Spotify API requests. Creating a Spotify playlist requires an authorised Spotify connection.
-
-## What it does
-
-- Provides a responsive interface optimised for both mobile and desktop use.
-- Connects to Spotify and retrieves Liked Songs with live loading progress.
-- Classifies tracks using their titles, artists, and album metadata, with tags for musical periods, instruments, forms, and keys.
-- Combines keyword search with AND/OR tag filtering to narrow down a library.
-- Lets users select matching tracks and create a private Spotify playlist.
-- Caches the library and supports syncing newly liked songs to reduce repeated API requests.
-- Includes a **Load Demo Songs** option for exploring the interface with local sample tracks, without connecting Spotify or making Spotify API requests.
 
 ### Current limitations
 
